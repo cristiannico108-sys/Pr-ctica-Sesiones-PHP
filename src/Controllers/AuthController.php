@@ -21,9 +21,7 @@ final class AuthController
 
         $usuario = (new UserModel())->findByEmail($email);
 
-        // OJO: Abre src/Models/UserModel.php y mira si el campo se llama 'password' o 'password_hash'.
-        // Si se llama 'password_hash', cambia $usuario['password'] por $usuario['password_hash'] aquí abajo:
-        if ($usuario && password_verify($password, $usuario['password'])) {
+        if ($usuario && password_verify($password, $usuario['hash'])) {
             Session::set('user_id', $usuario['id']);
             redirect('perfil');
         }
