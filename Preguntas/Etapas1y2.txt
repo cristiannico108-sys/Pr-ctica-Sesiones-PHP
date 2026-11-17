@@ -1,0 +1,36 @@
+Etapa 1. Sesión encapsulada e inspección
+
+----------------------------------¿Qué cookie ha creado PHP y qué contiene su valor? ¿Aparece secret en ella?----------------------------------
+
+PHP crea una cookie llamada PHPSESSID. Dentro no guarda tus datos, sino un código largo y aleatorio
+(como si fuera el número de tu taquilla o una pulsera de entrada). El dato secret (1234) no aparece ahí. Por seguridad, los datos reales nunca se mandan al navegador del usuario; la cookie solo sirve para que el servidor sepa qué ficha te pertenece cada vez que cargas una página.
+
+----------------------------------¿En qué carpeta se guardan las sesiones en vuestro equipo? ¿Cómo se llama el fichero y qué relación tiene con la cookie?----------------------------------
+
+Se guardan en una carpeta privada dentro del servidor (en nuestro contenedor Linux de Docker suele ser /tmp o /var/lib/php/sessions,
+la ruta exacta que nos muestra session_save_path()). El archivo se llama sess_ seguido exactamente del mismo código aleatorio que tiene la cookie PHPSESSID del navegador.
+Dentro de ese archivo sí está guardado el dato secret con su valor 1234.
+
+
+
+
+
+Etapa 2. Login y logout con protección manual
+
+----------------------------------¿Por qué el mensaje de error debe ser el mismo si el correo no existe que si la contraseña es incorrecta?----------------------------------
+
+Para no dar pistas a posibles atacantes. Si la web dijera "ese correo no existe",
+alguien podría probar miles de correos automáticamente para descubrir qué personas tienen cuenta creada y centrarse solo en adivinar sus contraseñas.
+Con un aviso genérico ("Datos incorrectos"), no sabe qué ha fallado.
+
+----------------------------------¿Qué tres pasos hacen falta para cerrar bien la sesión y por qué no basta con session_destroy()?----------------------------------
+
+Hacen falta tres pasos: vaciar los datos de la sesión que PHP tiene abiertos en ese instante ($_SESSION = []),
+borrar la cookie del navegador poniéndole una fecha ya caducada, y eliminar el archivo de sesión en el servidor (session_destroy()).
+Si solo usamos session_destroy(), se borra el archivo del disco, pero durante el resto de esa carga de página los datos siguen vivos en la memoria y el navegador sigue conservando su cookie.
+
+----------------------------------¿Por qué login() y logout() van en AuthController y no en UserController?----------------------------------
+
+Porque hacen trabajos distintos. AuthController funciona como el portero de la entrada: comprueba quién eres y te abre o te cierra la sesión.
+UserController es quien gestiona tu ficha de usuario (por ejemplo, para ver tu perfil) una vez que ya estás dentro.
+Separarlos evita mezclar tareas y hace que modificar algo en el futuro sea mucho más sencillo.
