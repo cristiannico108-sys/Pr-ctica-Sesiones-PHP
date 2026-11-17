@@ -1,5 +1,4 @@
 <?php
 // Dirección base del proyecto para el navegador (debe terminar en "/").
 
-define('UNIDAD6/Videoteca_Base/', '/Videoteca/');
-
+define('BASE_URL', '/UNIDAD6/Videoteca_Base/Videoteca/');
