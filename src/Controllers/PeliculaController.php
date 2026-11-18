@@ -13,9 +13,9 @@ final class PeliculaController
     /** Catálogo completo. */
     public function index(): void
     {
-        if (!Session::has('user_id')) {
-            redirect('login');
-        }
+        // if (!Session::has('user_id')) {
+        //     redirect('login');              LOS ELIMINO EN LA ETAPA 3
+        // } 
 
         $peliculas = (new PeliculaModel())->all();
 
