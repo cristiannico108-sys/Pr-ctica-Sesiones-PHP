@@ -1,0 +1,38 @@
+------------------------------ Experimento A. Fijación de sesión ------------------------------
+
+¿Por qué un identificador idéntico antes y después del login es peligroso?
+Porque permite un ataque de fijación de sesión. Si un atacante logra fijar
+o conocer el código PHPSESSID de una persona antes de que inicie sesión 
+(por ejemplo, enviándole un enlace preparado o tras usar un ordenador público)
+y el servidor mantiene ese mismo código tras comprobar la contraseña,
+el identificador que ya conocía el atacante pasa automáticamente a tener los permisos de esa cuenta.
+Así puede entrar y suplantar al usuario sin necesidad de saber su contraseña.
+
+
+------------------------------ Experimento B. Cookie legible desde JavaScript ------------------------------
+
+1. ¿Qué evita httponly y qué sigue pudiendo hacer un script inyectado aunque no lea la cookie?
+
+La directiva httponly bloquea el acceso desde JavaScript (document.cookie), impidiendo que
+un script malicioso robe el código de la cookie para enviárselo a un atacante y abrir la sesión desde otro ordenador.
+Aun así, si la web tiene un fallo que permite colar código JavaScript (XSS), ese código sigue pudiendo actuar dentro de
+la propia pestaña de la víctima (hacer clics, enviar peticiones o leer datos privados de la pantalla), ya que el navegador
+sigue enviando la cookie automáticamente en cada petición interna.
+
+
+
+
+2. ¿Qué defensa corrige la causa (apartado 3.8, tabla de ataques)?
+httponly solo evita que roben la cookie, pero la causa raíz del ataque XSS se corrige escapando siempre cualquier dato que se
+imprima en el HTML mediante htmlspecialchars() (la función e() del proyecto). De este modo, símbolos como <, > o " se transforman
+en texto inofensivo y el navegador nunca los interpreta ni los ejecuta como código.
+
+
+
+
+3. ¿Por qué no es seguro que el identificador viaje en la URL?Citad al menos dos sitios donde queda registrado.
+
+Porque la dirección URL es visible y se almacena en texto plano en múltiples puntos; si alguien ve o comparte ese enlace,
+obtiene acceso directo a la sesión activa (por eso se configuran use_only_cookies = 1 y use_trans_sid = 0). El identificador
+queda guardado en el historial del navegador del equipo, en los registros de actividad (logs) del servidor web y en la cabecera
+HTTP Referer al pulsar enlaces hacia páginas externas.
